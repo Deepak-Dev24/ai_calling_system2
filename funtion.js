@@ -1,12 +1,17 @@
 let ALL_CALLS = [];
+let FILTERED_CALLS = [];
 let callChart;
+
 
 // ===== LOAD DATA =====
 async function loadCDR() {
   const res = await fetch("cdr.php");
   const json = await res.json();
   ALL_CALLS = json.data || [];
-  applyFilters();
+FILTERED_CALLS = [...ALL_CALLS]; // COPY
+renderTable(FILTERED_CALLS);
+updateMetrics(FILTERED_CALLS);
+
 }
 
 // ===== FILTERS =====
@@ -14,15 +19,16 @@ function applyFilters() {
   const q = document.getElementById("search").value.toLowerCase();
   const selectedDate = document.getElementById("dateFilter").value;
 
-  let filtered = ALL_CALLS.filter(c => {
-    // Search filter
+FILTERED_CALLS = ALL_CALLS.filter(c => {
+
+    // SEARCH FILTER
     const matchSearch =
       String(c.caller_id_number || "").toLowerCase().includes(q) ||
       String(c.destination_number || "").toLowerCase().includes(q) ||
       String(c.uuid || "").toLowerCase().includes(q);
 
-    // Date filter
-    const matchDate = selectedDate
+    // DATE FILTER (FIXED)
+   const matchDate = selectedDate
   ? formatIST(c.start_time).split(",")[0].split("/").reverse().join("-") === selectedDate
   : true;
 
@@ -30,9 +36,8 @@ function applyFilters() {
     return matchSearch && matchDate;
   });
 
-  renderTable(filtered);
-  updateMetrics(filtered);
-  updateChart(filtered);
+  renderTable(FILTERED_CALLS);
+  updateMetrics(FILTERED_CALLS);
 }
 
 // ===== METRICS =====
@@ -114,7 +119,7 @@ function exportCSV() {
     "Date","Direction","From","To","Duration","Status","Cost"
   ];
 
-  const rows = ALL_CALLS.map(c => [
+ const rows = FILTERED_CALLS.map(c => [
     new Date(c.start_time).toLocaleString(),
     c.call_direction,
     c.caller_id_number,

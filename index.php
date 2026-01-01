@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['admin_logged_in'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,9 +21,11 @@
 <!-- Header -->
 <div class="flex justify-between items-center mb-6">
   <h1 class="text-xl font-semibold">Call Records</h1>
-  <div class="flex items-center space-x-4">
-    <input type="date" id="dateFilter" class="border rounded px-3 py-2">
-  </div>
+ <form action="logout.php" method="POST">
+    <button class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+        Logout
+    </button>
+</form>
 </div>
 <!-- Summary Cards -->
 <div class="grid grid-cols-4 gap-4 mb-6">
@@ -40,11 +52,14 @@
 
 <!-- Search + Actions -->
 <div class="flex justify-between mb-4">
+ 
   <input id="search" placeholder="Search by phone number, call ID or DID..."
     class="border px-3 py-2 rounded w-1/2">
   <div>
+    <input type="date" id="dateFilter" class="border rounded px-3 py-2">
     <button onclick="exportCSV()" class="border px-4 py-2 rounded mr-2">Export CSV</button>
   </div>
+  
 </div>
 
 

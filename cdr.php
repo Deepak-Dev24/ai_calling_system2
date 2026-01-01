@@ -1,34 +1,44 @@
 <?php
-// ---- WAMP SAFE ENV SETUP ----
 putenv("VOBIZ_AUTH_ID=MA_HBHNNLV7");
 putenv("VOBIZ_AUTH_TOKEN=xfqiPaeTk6KIiZWVLXfbNWaQSvRRjrCurLn8jPcPStk4XehzHesP8SjoThlJqB2c");
 
-// ---- READ ENV ----
 $authId = getenv('VOBIZ_AUTH_ID');
 $authToken = getenv('VOBIZ_AUTH_TOKEN');
 
-if (!$authId || !$authToken) {
-  http_response_code(500);
-  header("Content-Type: application/json");
-  echo json_encode(["error" => "Server misconfiguration"]);
-  exit;
-}
+$allData = [];
+$page = 1;
 
-// ---- API CALL ----
-$ch = curl_init();
+do {
+    $url = "https://api.vobiz.ai/api/v1/account/$authId/cdr?page=$page&per_page=50";
 
-curl_setopt_array($ch, [
-  CURLOPT_URL => "https://api.vobiz.ai/api/v1/account/$authId/cdr",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_HTTPHEADER => [
-    "X-Auth-ID: $authId",
-    "X-Auth-Token: $authToken"
-  ]
-]);
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            "X-Auth-ID: $authId",
+            "X-Auth-Token: $authToken"
+        ]
+    ]);
 
-$response = curl_exec($ch);
-curl_close($ch);
+    $response = curl_exec($ch);
+    curl_close($ch);
 
-// ---- OUTPUT ----
+    $json = json_decode($response, true);
+
+    if (!isset($json['data'])) break;
+
+    $allData = array_merge($allData, $json['data']);
+
+    $hasNext = $json['pagination']['has_next'] ?? false;
+    $page++;
+
+} while ($hasNext);
+
+// FINAL OUTPUT
 header("Content-Type: application/json");
-echo $response;
+echo json_encode([
+    "success" => true,
+    "count" => count($allData),
+    "data" => $allData
+]);
