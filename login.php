@@ -9,43 +9,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       font-family: 'Syne', sans-serif;
       background: #f0f0f0;
+      color: #fff;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
       overflow: hidden;
     }
 
     /* Animated background blobs */
     .blob {
       position: absolute;
-      width: 420px;
-      height: 420px;
+      width: 500px;
+      height: 500px;
       border-radius: 50%;
-      filter: blur(90px);
+      filter: blur(80px);
       opacity: 0.6;
       animation: float 18s infinite ease-in-out;
     }
 
     .blob.blue {
       background: #00f6ff;
-      top: -15%;
-      right: -15%;
+      top: -10%;
+      right: -10%;
     }
 
     .blob.pink {
       background: #ff4ecd;
-      bottom: -20%;
-      left: -15%;
+      bottom: -15%;
+      left: -10%;
       animation-delay: -6s;
     }
 
@@ -54,24 +50,24 @@
       50% { transform: translate(40px,-40px); }
     }
 
-    /* Login Card */
+    /* Card */
     .login-card {
       position: relative;
       z-index: 10;
       width: 100%;
       max-width: 380px;
-      padding: 2rem;
+      padding: 2.5rem;
       border-radius: 18px;
       background: rgba(255,255,255,0.08);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.15);
-      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
     }
 
     .login-card h2 {
       text-align: center;
-      font-size: 1.7rem;
-      margin-bottom: 1.6rem;
+      font-size: 1.8rem;
+      margin-bottom: 1.8rem;
       background: linear-gradient(90deg,#00f6ff,#c77dff,#ff4ecd);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -80,7 +76,7 @@
     label {
       font-size: 0.85rem;
       color: #000;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.4rem;
       display: block;
     }
 
@@ -88,22 +84,22 @@
       width: 100%;
       height: 44px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.1);
-      color: #000;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: #010101;
       padding: 0 12px;
       font-size: 0.95rem;
-      margin-bottom: 1.1rem;
       outline: none;
+      margin-bottom: 1.2rem;
     }
 
     input::placeholder {
-      color: #777;
+      color: #8f8383ff;
     }
 
     input:focus {
       border-color: #00f6ff;
-      box-shadow: 0 0 14px rgba(0,246,255,0.3);
+      box-shadow: 0 0 20px rgba(0,246,255,0.3);
     }
 
     button {
@@ -117,7 +113,7 @@
       color: #05060f;
       background: linear-gradient(90deg,#00f6ff,#c77dff,#ff4ecd);
       background-size: 200%;
-      transition: 0.3s ease;
+      transition: 0.3s;
     }
 
     button:hover {
@@ -126,125 +122,54 @@
     }
 
     .error {
-      margin-top: 0.9rem;
+      margin-top: 1rem;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #ff6b6b;
     }
 
     .admin-note {
       text-align: center;
-      margin-top: 1.3rem;
+      margin-top: 1.5rem;
       font-size: 0.75rem;
-      color: #272b31;
+      color: #272b31ff;
     }
-
-    /* Mobile */
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 1.6rem;
-        border-radius: 14px;
-      }
-
-      .login-card h2 {
-        font-size: 1.5rem;
-      }
-
-      input, button {
-        height: 42px;
-        font-size: 0.9rem;
-      }
-
-      .blob {
-        width: 300px;
-        height: 300px;
-      }
-    }
-
-    /* Tablets */
-    @media (max-width: 768px) {
-      .login-card {
-        max-width: 90%;
-      }
-    }
-
-    /* Large screens */
-    @media (min-width: 1400px) {
-      .login-card {
-        max-width: 420px;
-        padding: 2.8rem;
-      }
-
-      .login-card h2 {
-        font-size: 2rem;
-      }
-    }
-    /* H1 Animation */
-.page-title {
+ .welcome-text {
   position: absolute;
-  top: 5%;
-  width: 100%;
-  text-align: center;
-  font-weight: 700;
-  line-height: 1.2;
-  padding: 0 16px;
+  top: 60px;
+  font-size: 36px;
+  font-weight: 600;
 
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  background: linear-gradient(90deg, #00c6ff, #b46cff);
 
-  background: linear-gradient(90deg,#00f6ff,#c77dff,#ff4ecd);
-  -webkit-background-clip: text;
+  background-clip: text;              /* standard */
+  -webkit-background-clip: text;      /* Chrome / Safari */
+
+  color: transparent;                 /* standard fallback */
   -webkit-text-fill-color: transparent;
 
   opacity: 0;
-  animation:
-    slideFade 1.2s ease-out forwards,
-    glowPulse 3s ease-in-out infinite 1.2s;
+  transform: translateY(-20px);
+  animation: fadeSlide 1.2s ease-out forwards;
 }
 
-/* Slide + Fade */
-@keyframes slideFade {
-  from {
-    opacity: 0;
-    transform: translateY(-25px);
-  }
+
+@keyframes fadeSlide {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Soft Glow Pulse */
-@keyframes glowPulse {
-  0%, 100% {
-    text-shadow: 0 0 8px rgba(0,246,255,0.25);
-  }
-  50% {
-    text-shadow:
-      0 0 14px rgba(199,125,255,0.4),
-      0 0 22px rgba(255,78,205,0.35);
-  }
-}
-
-/* Mobile tuning */
-@media (max-width: 480px) {
-  .page-title {
-    top: 3%;
-    animation:
-      slideFade 1s ease-out forwards,
-      glowPulse 3s ease-in-out infinite 1s;
-  }
-}
-
-
   </style>
 </head>
 
 <body>
-  <h1 class="page-title">Welcome to Sushrit Eye Hospital</h1>
+ <h1 class="welcome-text">Welcome To Making Spark</h1>
+
   <!-- Background blobs -->
   <div class="blob blue"></div>
   <div class="blob pink"></div>
-    
   <!-- Login Card -->
   <form class="login-card" method="POST" action="verify_login.php">
 

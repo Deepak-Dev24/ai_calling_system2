@@ -16,17 +16,10 @@ if (!isset($_SESSION['admin_logged_in'])) {
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-100">
+  <?php include 'navbar.php' ?>
+<h1 class="m-5">Call Records</h1>
 
-<!-- Header -->
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-xl font-semibold">Call Records</h1>
- <form action="logout.php" method="POST">
-    <button class="bg-red-600 text-white px-3 py-1 rounded text-sm">
-        Logout
-    </button>
-</form>
-</div>
 <!-- Summary Cards -->
 <div class="grid grid-cols-4 gap-4 mb-6">
   <div class="bg-white p-4 rounded shadow">
