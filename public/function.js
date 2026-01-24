@@ -1,37 +1,55 @@
 let ALL_CALLS = [];
 let FILTERED_CALLS = [];
-let callChart;
+console.log("🔥 funtion.js LOADED - FINAL VERSION");
 
+let PAGE = 1;
+const LIMIT = 50;
+let HAS_NEXT = true;
 
 // ===== LOAD DATA =====
-async function loadCDR() {
-  const res = await fetch("cdr.php");
-  const json = await res.json();
-  ALL_CALLS = json.data || [];
-FILTERED_CALLS = [...ALL_CALLS]; // COPY
-renderTable(FILTERED_CALLS);
-updateMetrics(FILTERED_CALLS);
+async function loadCDR(reset = false) {
+  if (reset) {
+    PAGE = 1;
+    ALL_CALLS = [];
+    FILTERED_CALLS = [];
+    HAS_NEXT = true;
+  }
 
+  if (!HAS_NEXT) return;
+
+  const res = await fetch(`../api/cdr.php?page=${PAGE}&limit=${LIMIT}`);
+  const json = await res.json();
+
+  HAS_NEXT = json.hasNext === true;
+
+  ALL_CALLS.push(...(json.data || []));
+  FILTERED_CALLS = [...ALL_CALLS];
+
+  renderTable(FILTERED_CALLS);
+  updateMetrics(FILTERED_CALLS);
+
+  const loadMoreBtn = document.getElementById("loadMore");
+  if (loadMoreBtn) {
+    loadMoreBtn.style.display = HAS_NEXT ? "block" : "none";
+  }
 }
+
 
 // ===== FILTERS =====
 function applyFilters() {
   const q = document.getElementById("search").value.toLowerCase();
   const selectedDate = document.getElementById("dateFilter").value;
 
-FILTERED_CALLS = ALL_CALLS.filter(c => {
+  FILTERED_CALLS = ALL_CALLS.filter(c => {
 
-    // SEARCH FILTER
     const matchSearch =
-      String(c.caller_id_number || "").toLowerCase().includes(q) ||
-      String(c.destination_number || "").toLowerCase().includes(q) ||
+      String(c.from || "").toLowerCase().includes(q) ||
+      String(c.to || "").toLowerCase().includes(q) ||
       String(c.uuid || "").toLowerCase().includes(q);
 
-    // DATE FILTER (FIXED)
-   const matchDate = selectedDate
-  ? formatIST(c.start_time).split(",")[0].split("/").reverse().join("-") === selectedDate
-  : true;
-
+    const matchDate = selectedDate
+      ? formatIST(c.date).split(",")[0].split("/").reverse().join("-") === selectedDate
+      : true;
 
     return matchSearch && matchDate;
   });
@@ -39,12 +57,11 @@ FILTERED_CALLS = ALL_CALLS.filter(c => {
   renderTable(FILTERED_CALLS);
   updateMetrics(FILTERED_CALLS);
 }
-
 // ===== METRICS =====
 function updateMetrics(calls) {
   document.getElementById("totalCalls").innerText = calls.length;
 
-  const answered = calls.filter(c => c.hangup_disposition === "answered");
+  const answered = calls.filter(c => c.status === "Answered");
   document.getElementById("answeredCalls").innerText = answered.length;
 
   const totalDuration = answered.reduce(
@@ -59,7 +76,6 @@ function updateMetrics(calls) {
       ? Math.round((answered.length / calls.length) * 100) + "%"
       : "0%";
 }
-
 // ===== TABLE =====
 function renderTable(calls) {
   const tbody = document.getElementById("tableBody");
@@ -68,7 +84,7 @@ function renderTable(calls) {
   if (!calls.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="text-center text-gray-400 p-10">
+        <td colspan="8" class="text-center text-gray-400 p-10">
           No call records found
         </td>
       </tr>`;
@@ -78,17 +94,29 @@ function renderTable(calls) {
   calls.forEach(call => {
     tbody.innerHTML += `
       <tr class="border-b">
-        <td class="p-2">${formatIST(call.start_time)}</td>
-        <td class="p-2 capitalize">${call.call_direction}</td>
-        <td class="p-2">${call.caller_id_number}</td>
-        <td class="p-2">${call.destination_number}</td>
-        <td class="p-2">${call.billsec}s</td>
-        <td class="p-2 capitalize">${call.hangup_disposition}</td>
-        <td class="p-2">₹${call.total_cost}</td>
+        <td class="p-2">${formatIST(call.date)}</td>
+        <td class="p-2 capitalize">${call.direction}</td>
+        <td class="p-2">${call.from}</td>
+        <td class="p-2">${call.to}</td>
+        <td class="p-2">${call.duration}s</td>
+        <td class="p-2 capitalize">${call.status}</td>
+        <td class="p-2 ">
+              ${
+                call.recording_url
+                  ? `
+                    <audio controls preload="none">
+                      <source src="../api/stream_recording.php?url=${encodeURIComponent(call.recording_url)}">
+                    </audio>
+                  `
+                  : "—"
+              }
+        </td>
+
       </tr>
     `;
   });
 }
+
 function formatIST(dateStr) {
   if (!dateStr) return "-";
 
@@ -113,21 +141,21 @@ document.getElementById("dateFilter").addEventListener("change", applyFilters);
 
 // ===== EXPORT CSV =====
 function exportCSV() {
-  if (!ALL_CALLS.length) return alert("No data to export");
+  if (!FILTERED_CALLS.length) return alert("No data to export");
 
   const headers = [
-    "Date","Direction","From","To","Duration","Status","Cost"
+    "Date","Direction","From","To","Duration","Status","Recording"
   ];
 
- const rows = FILTERED_CALLS.map(c => [
-    new Date(c.start_time).toLocaleString(),
-    c.call_direction,
-    c.caller_id_number,
-    c.destination_number,
+  const rows = FILTERED_CALLS.map(c => [
+    formatIST(c.date),
+    c.direction,
+    c.from,
+    c.to,
     c.duration,
-    c.hangup_disposition,
-    c.total_cost
-  ].map(v => `"${String(v).replace(/"/g, '""')}"`)); // Safe CSV
+    c.status,
+    c.recording_url ? "YES" : "NO"
+  ].map(v => `"${String(v).replace(/"/g, '""')}"`));
 
   let csv = headers.join(",") + "\n";
   rows.forEach(r => csv += r.join(",") + "\n");
@@ -144,9 +172,10 @@ function exportCSV() {
 }
 
 
-
 // ===== INIT =====
 loadCDR();
-
-
+function loadMore() {
+  PAGE++;
+  loadCDR();
+}
 

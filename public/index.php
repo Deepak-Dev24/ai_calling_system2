@@ -1,11 +1,5 @@
-<?php
-session_start();
-
-if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: login.php");
-    exit;
-}
-?>
+<?php require_once __DIR__ . '/../core/auth.php';?>
+<?php require_once __DIR__ . '/../core/session_secure.php';?>
 
 
 <!DOCTYPE html>
@@ -60,17 +54,18 @@ if (!isset($_SESSION['admin_logged_in'])) {
 
 <!-- Table -->
 <div class="bg-white rounded shadow p-4">
-  <table class="w-full text-sm">
-    <thead class="border-b">
-      <tr>
-        <th class="text-left p-2">Date</th>
-        <th class="text-left p-2">Direction</th>
-        <th class="text-left p-2">From</th>
-        <th class="text-left p-2">To</th>
-        <th class="text-left p-2">Duration</th>
-        <th class="text-left p-2">Status</th>
-        <th class="text-left p-2">Cost</th>
-      </tr>
+  <div class="h-[65vh] overflow-y-auto">
+  <table class="w-full text-sm table-fixed">
+    <thead class="sticky top-0 bg-white z-20 border-b">
+       <tr>
+         <th class="text-left p-2 w-[18%]">Date</th>
+         <th class="text-left p-2 w-[12%]">Direction</th>
+         <th class="text-left p-2 w-[16%]">From</th>
+         <th class="text-left p-2 w-[16%]">To</th>
+         <th class="text-left p-2 w-[8%]">Duration</th>
+         <th class="text-left p-2 w-[10%]">Status</th>
+         <th class="text-left p-2 pe-5 w-[20%]">Recording</th>
+       </tr>
     </thead>
     <tbody id="tableBody">
       <tr>
@@ -81,6 +76,18 @@ if (!isset($_SESSION['admin_logged_in'])) {
     </tbody>
   </table>
 </div>
-<script src="funtion.js" ></script>
+<div class="flex justify-center mt-4">
+  <button
+    id="loadMore"
+    onclick="loadMore()"
+    class="px-6 py-2 border rounded bg-white hover:bg-gray-100"
+    style="display:none"
+  >
+    Load More
+  </button>
+</div>
+</div>
+
+<script src="function.js?v=1" ></script>
 </body>
 </html>

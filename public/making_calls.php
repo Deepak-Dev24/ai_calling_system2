@@ -1,6 +1,6 @@
 <?php
-session_start();
-require 'csrf.php';
+require '../core/csrf.php';
+require '../core/auth.php'; 
 
 $message = "";
 
@@ -20,15 +20,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $name  = trim($_POST['name'] ?? '');
         $phone = preg_replace('/[^0-9]/', '', $_POST['phone'] ?? '');
+        $date  = trim($_POST['date'] ?? '');
 
-        if(empty($name) || empty($phone)){
-            $message = "Name and phone required";
+        if(empty($name) || empty($phone) || empty($date)){
+            $message = "Name, phone and date are required";
+        }
+        else if (strlen($phone) < 10) {
+          $message = "Phone number must be at least 10 digits";
         }
         else {
 
             $data = http_build_query([
                 'phone' => $phone,
-                'name'  => $name
+                'name'  => $name,
+                'date'  => $date
             ]);
 
             try {
@@ -96,7 +101,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $nameIndex  = array_search("name", $header);
                 $phoneIndex = array_search("phone", $header);
+                $dateIndex = array_search("date", $header);
+                
 
+                if($dateIndex === false) $dateIndex = 2;
                 if($nameIndex === false)  $nameIndex = 0;
                 if($phoneIndex === false) $phoneIndex = 1;
 
@@ -106,13 +114,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     $name  = trim($row[$nameIndex] ?? '');
                     $phone = preg_replace('/[^0-9]/', '', $row[$phoneIndex] ?? '');
+                    $date  = trim($row[$dateIndex] ?? '');
 
-                    if(empty($name) || empty($phone)) continue;
+                    if(empty($name) || empty($phone) || empty($date)) continue;
                     if(strlen($phone) < 10) continue;
 
                     $data = http_build_query([
                         'phone' => $phone,
-                        'name'  => $name
+                        'name'  => $name,
+                        'date'  => $date
                     ]);
 
                     try{
@@ -232,6 +242,23 @@ Name
   "
   placeholder="Customer name">
 </div>
+<div>
+  <label class="text-xs sm:text-sm text-gray-600">
+    Operation Date
+  </label>
+
+  <input
+    type="date"
+    name="date"
+    required
+    class="
+      border rounded
+      w-full
+      p-2 sm:p-2.5
+      mt-1
+      text-sm sm:text-base
+    ">
+</div>
 
 <div>
 <label class="text-xs sm:text-sm text-gray-600">
@@ -253,6 +280,7 @@ Phone
 
 <div>
 <button class="
+  w-full
   bg-blue-600 hover:bg-blue-700
   text-white
   rounded
@@ -293,7 +321,7 @@ Bulk Calling
   text-gray-600
 ">
 Upload CSV with columns:
-<b>name, phone</b>
+<b>name, phone, date</b>
 </div>
 
 <div class="mt-2 sm:mt-3">

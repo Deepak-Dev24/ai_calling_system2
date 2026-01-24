@@ -53,6 +53,7 @@
     /* Card */
     .login-card {
       position: relative;
+      margin: 25px;
       z-index: 10;
       width: 100%;
       max-width: 380px;
@@ -139,6 +140,7 @@
   top: 60px;
   font-size: 36px;
   font-weight: 600;
+  text-align: center;
 
   background: linear-gradient(90deg, #00c6ff, #b46cff);
 
@@ -165,14 +167,13 @@
 </head>
 
 <body>
- <h1 class="welcome-text">Welcome To Making Spark</h1>
+ <h1 class="welcome-text">Welcome To Sushrut Eye Hospital</h1>
 
   <!-- Background blobs -->
   <div class="blob blue"></div>
   <div class="blob pink"></div>
   <!-- Login Card -->
-  <form class="login-card" method="POST" action="verify_login.php">
-
+  <form class="login-card" method="POST" action="../core/verify_login.php">
     <h2>Admin Panel Login</h2>
 
     <label>Username</label>

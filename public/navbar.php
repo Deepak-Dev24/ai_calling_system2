@@ -1,5 +1,5 @@
 <nav class="bg-gray-800">
-<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+<div class=" mx-auto px-2 sm:px-6 ">
 <div class="relative flex h-16 items-center justify-between">
 
 <!-- MOBILE TOGGLE -->
@@ -19,12 +19,7 @@
 <!-- LEFT -->
 <div class="flex flex-1 items-center sm:items-stretch sm:justify-start">
 
-  <!-- LOGO -->
-  <div class="flex shrink-0 items-center">
-    <img
-      src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-      class="h-8 w-auto" />
-  </div>
+  
 
 
   <!-- DESKTOP MENU -->
@@ -37,7 +32,7 @@
       </a>
 
       <a href="making_calls.php"
-        class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
+        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
         Make Calls
       </a>
 
@@ -50,7 +45,7 @@
 <!-- RIGHT - LOGOUT -->
 <div class="hidden sm:block">
   <a href="logout.php"
-    class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+    class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-red-700 hover:text-white">
     Logout
   </a>
 </div>
@@ -64,7 +59,7 @@
 
 <div class="space-y-1 px-2 pt-2 pb-3">
 
-  <a href="dashboard.php"
+  <a href="index.php"
     class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
     Dashboard
   </a>
@@ -75,7 +70,7 @@
   </a>
 
   <a href="logout.php"
-    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-red-700 hover:text-white">
     Logout
   </a>
 
