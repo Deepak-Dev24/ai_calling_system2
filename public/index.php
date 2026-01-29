@@ -44,11 +44,6 @@
     <span id="totalMinutes">0</span> minutes used
   </p>
 
-  <button
-    onclick="clearBill()"
-    class="mt-2 text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-    Pay / Clear
-  </button>
 </div>
  
 

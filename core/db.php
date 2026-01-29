@@ -2,7 +2,7 @@
 $host = "localhost";
 $db   = "call_billing";
 $user = "root";
-$pass = "";
+$pass = "Redhat@123";
 
 try {
   $pdo = new PDO(

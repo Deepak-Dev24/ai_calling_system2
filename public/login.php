@@ -173,7 +173,7 @@
   <div class="blob blue"></div>
   <div class="blob pink"></div>
   <!-- Login Card -->
-  <form class="login-card" method="POST" action="../core/verify_login.php">
+  <form class="login-card" method="POST" action="/verify_login.php">
     <h2>Admin Panel Login</h2>
 
     <label>Username</label>

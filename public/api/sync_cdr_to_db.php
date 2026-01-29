@@ -1,17 +1,24 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 date_default_timezone_set('Asia/Kolkata');
 
-require_once __DIR__ . '/../core/db.php';
-require_once __DIR__ . '/vobiz_cdr_fetch.php';
+require_once __DIR__ . '/../../core/session_secure.php';
+require_once __DIR__ . '/../../core/auth.php';
+require_once __DIR__ . '/../../core/db.php';
+require_once __DIR__ . '/../../api/vobiz_cdr_fetch.php';
 
-$userId = 1;
+header('Content-Type: application/json');
+
+$userId = $_SESSION['user_id'] ?? 1;
 $rate   = 3;
 $rows   = 0;
 
 $data = fetchVobizCDR(1, 50);
 
 if (empty($data['data'])) {
-    echo "NO DATA FROM VOBIZ\n";
+    echo json_encode(["status" => "ok", "message" => "No data from Vobiz"]);
     exit;
 }
 
@@ -54,4 +61,7 @@ foreach ($data['data'] as $cdr) {
     $rows++;
 }
 
-echo "Sync completed. Rows processed: $rows\n";
+echo json_encode([
+    "status" => "success",
+    "rows_processed" => $rows
+]);

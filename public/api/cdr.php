@@ -1,7 +1,11 @@
 <?php
-require '../core/auth.php';
-require '../config/vobiz_config.php';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
+require_once __DIR__ . '/../../core/auth.php';
+require_once __DIR__ . '/../../config/vobiz_config.php';
+
+header('Content-Type: application/json');
 $authId    = VOBIZ_AUTH_ID;
 $authToken = VOBIZ_AUTH_TOKEN;
 

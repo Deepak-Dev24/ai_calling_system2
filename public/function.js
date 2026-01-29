@@ -193,25 +193,6 @@ function exportCSV() {
   URL.revokeObjectURL(url);
 }
 
-async function clearBill() {
-  if (!confirm("Are you sure you want to clear the bill?")) return;
-
-  try {
-    const res = await fetch("../api/clear_bill.php", {
-      method: "POST"
-    });
-    const json = await res.json();
-
-    alert(json.message || "Bill cleared");
-
-    // Reload billing after clearing
-    loadBilling();
-
-  } catch (e) {
-    alert("Failed to clear bill");
-    console.error(e);
-  }
-}
 
 
 // ===== INIT =====
