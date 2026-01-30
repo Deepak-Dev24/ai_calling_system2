@@ -1,181 +1,310 @@
-📘 PHP Dashboard Deployment Guide
 
-Domain: sushruteyehospital.in
-Server: Ubuntu
-Web Server: Nginx
-Backend: PHP 8.3 (PHP-FPM)
-SSL: Let’s Encrypt (Certbot)
+# 🚀 AI Calling System – NGINX + PHP-FPM + MySQL (FINAL INSTALL DOC)
 
-1. Project Overview
+> **Stack**: NGINX (LEMP) + PHP-FPM + MySQL
+> **No Apache | No phpMyAdmin | Secure & Production-Ready**
 
-This document describes the complete deployment of a PHP-based dashboard on an Ubuntu server using Nginx, PHP-FPM, and HTTPS (Let’s Encrypt).
-The setup ensures secure, production-ready hosting for the hospital dashboard.
+---
 
-2. Prerequisites
+## 📌 SYSTEM REQUIREMENTS
 
-Ubuntu Server (22.04 / 24.04)
+* Ubuntu 22.04+
+* Internet access
+* GitHub repository access
+* Non-root user with `sudo`
 
-Public IP assigned to server
+---
 
-Domain purchased: sushruteyehospital.in
+## 🔹 PART 1: BASIC SERVER SETUP
 
-DNS access to domain provider
+### 1️⃣ Update system
 
-SSH access to server
+```bash
+sudo apt update && sudo apt upgrade -y
+```
 
-Ports open in firewall / security group:
+---
 
-22 (SSH)
+### 2️⃣ Install NGINX
 
-80 (HTTP)
+```bash
+sudo apt install nginx -y
+```
 
-443 (HTTPS)
+Check:
 
-3. DNS Configuration
-Required DNS Records
-Type	Host	Value
-A	@	Server Public IP
-CNAME	www	sushruteyehospital.in
+```bash
+sudo systemctl status nginx
+```
 
-📌 Ensure no parking or forwarding IPs are present.
+---
 
-Verification:
+### 3️⃣ Install MySQL
 
-dig sushruteyehospital.in
+```bash
+sudo apt install mysql-server -y
+```
 
+Secure MySQL:
 
-Expected result:
+```bash
+sudo mysql_secure_installation
+```
 
-Only the server IP should appear.
+Check:
 
-4. Install Required Packages
-sudo apt update
-sudo apt install -y nginx \
-php8.3 php8.3-fpm php8.3-cli \
-php-curl php-mbstring php-xml unzip git
+```bash
+sudo systemctl status mysql
+```
 
+---
 
-Verify services:
+### 4️⃣ Install PHP + PHP-FPM + Extensions
 
-systemctl status nginx
-systemctl status php8.3-fpm
+```bash
+sudo apt install -y \
+php8.1 \
+php8.1-fpm \
+php8.1-mysql \
+php8.1-curl \
+php8.1-zip \
+php8.1-mbstring \
+php8.1-xml
 
+```
 
-Verify PHP socket:
+Check:
 
-ls /run/php/
+```bash
+sudo systemctl status php8.1-fpm
+```
 
+⚠️ **Do NOT install `libapache2-mod-php`**
 
-Expected:
+---
 
-php8.3-fpm.sock
+## 🔹 PART 2: PROJECT CLONING
 
-5. Deploy PHP Project
-Create web root
-sudo mkdir -p /var/www/sushruteyehospital
+### 5️⃣ Install Git
 
-Copy project files
-sudo cp -r ~/Call-Records-Dashboard/* /var/www/sushruteyehospital/
+```bash
+sudo apt install git -y
+```
 
-Set permissions
-sudo chown -R www-data:www-data /var/www/sushruteyehospital
-sudo find /var/www/sushruteyehospital -type d -exec chmod 755 {} \;
-sudo find /var/www/sushruteyehospital -type f -exec chmod 644 {} \;
+---
 
-6. Nginx Virtual Host Configuration
+### 6️⃣ Clone project
 
-Create site config:
+```bash
+cd /var/www
+sudo git clone https://github.com/Deepak-Dev24/ai_calling_system.git
+```
 
-sudo nano /etc/nginx/sites-available/sushruteyehospital.in
+Fix ownership:
 
-Nginx Configuration
+```bash
+sudo chown -R ubuntu:ubuntu /var/www/ai_calling_system
+```
+
+---
+
+## 🔹 PART 3: NGINX CONFIGURATION (CRITICAL)
+
+### 7️⃣ Create NGINX site config
+
+```bash
+sudo nano /etc/nginx/sites-available/ai_calling_system
+```
+
+Paste **exactly this**:
+
 server {
     listen 80;
-    server_name sushruteyehospital.in www.sushruteyehospital.in;
+    server_name ai-calling.local;
 
-    root /var/www/sushruteyehospital;
+    root /var/www/ai_calling_system/public;
     index index.php index.html;
 
-    access_log /var/log/nginx/sushruteyehospital.access.log;
-    error_log  /var/log/nginx/sushruteyehospital.error.log;
+    server_tokens off;
 
     location / {
-        try_files $uri $uri/ /index.php?$args;
+        try_files $uri $uri/ /index.php?$query_string;
     }
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.1-fpm.sock;
     }
 
-    location ~ /\.ht {
+    location ~ /\. {
         deny all;
     }
+
+    error_log /var/log/nginx/ai_calling_error.log;
+    access_log /var/log/nginx/ai_calling_access.log;
 }
 
 
-Enable site and reload:
+---
 
-sudo ln -s /etc/nginx/sites-available/sushruteyehospital.in /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
+### 8️⃣ Enable site
+
+```bash
+sudo ln -s /etc/nginx/sites-available/ai_calling_system /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl reload nginx
+```
 
-7. Enable HTTPS (Let’s Encrypt SSL)
-Install Certbot
-sudo apt install -y certbot python3-certbot-nginx
+---
 
-Issue SSL Certificate
-sudo certbot --nginx \
--d sushruteyehospital.in \
--d www.sushruteyehospital.in
+### 9️⃣ Local DNS entry
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add:
+
+```
+SERVER_IP ai-calling.local
+```
+
+Access:
+
+```
+http://ai-calling.local
+```
+
+---
+
+## 🔹 PART 4: DATABASE SETUP
+
+### 🔟 Create DB & user
+
+```bash
+sudo mysql
+```
+
+```sql
+CREATE DATABASE call_billing;
+
+CREATE USER 'aiuser'@'localhost'
+IDENTIFIED BY 'AiUser@123';
+
+GRANT ALL PRIVILEGES ON call_billing.* TO 'aiuser'@'localhost';
+
+FLUSH PRIVILEGES;
+EXIT;
+
+```
+
+---
 
 
-Select:
 
-Agree to terms → Yes
+Create a database folder inside the project
 
-Redirect HTTP to HTTPS → Yes
+cd /var/www/ai_calling_system
+mkdir database     ->/////now add db at this location
 
-Verify SSL
-sudo certbot renew --dry-run
+### 1️⃣1️⃣ Import DB
 
-8. Post-Deployment Notes
-PHP File Changes
+```bash
 
-Updating .php files (e.g., login.php) does not require any service restart
+mysql -u aiuser -p call_billing < /var/www/database/call_billing.sql
 
-PHP is interpreted on every request
+```
 
-When Restart Is Required
-Change Type	Action
-PHP config (php.ini)	systemctl restart php8.3-fpm
-Nginx config	systemctl reload nginx
-PHP code only	No restart needed
-9. Final Result
+---
 
-✅ Dashboard live on https://sushruteyehospital.in
+## 🔹 PART 5: APPLICATION CONFIG
 
-✅ HTTPS secured with valid SSL
+### 1️⃣2️⃣ Configure DB connection
 
-✅ Nginx + PHP-FPM production setup
+Edit:
 
-✅ Clean file permissions
+```bash
+nano /var/www/ai_calling_system/core/db.php
+```
 
-✅ Ready for future enhancements
+Example:
 
-10. Optional Enhancements (Future Scope)
+```php
+$host = "127.0.0.1";
+$db   = "call_billing";
+$user = "aiuser";
+$pass = "AiUser@123";
+```
 
-IP-based access restriction
+---
 
-Session timeout hardening
+### 1️⃣3️⃣ Permissions
 
-Fail2Ban security
+```bash
+sudo chown -R www-data:www-data /var/www/ai_calling_system
+sudo chmod -R 755 /var/www/ai_calling_system
+sudo chmod -R 775 /var/www/ai_calling_system/logs
+```
 
-Log monitoring & analytics
+---
 
-Auto-deploy via GitHub webhook
+## 🔹 PART 6: SECURITY RULES (IMPORTANT)
 
-Docker-based deployment
+✔ Only `public/` exposed
+✔ Core logic protected (`core/`, `config/`, `api/`)
+✔ APIs require session auth
+✔ Rate-limited via NGINX
+✔ No phpMyAdmin installed
 
-✅ Deployment Status: SUCCESSFUL
+---
+
+## 🔹 PART 7: CRON AUTOMATION (BILLING)
+
+### 1️⃣4️⃣ Create cron job
+
+```bash
+crontab -e
+```
+
+Add:
+
+```bash
+*/10 * * * * /usr/bin/php /var/www/ai_calling_system/public/api/sync_cdr_to_db.php >> /var/www/ai_calling_system/logs/cron_sync.log 2>&1
+```
+
+Create log file:
+
+```bash
+touch /var/www/ai_calling_system/logs/cron_sync.log
+chmod 664 /var/www/ai_calling_system/logs/cron_sync.log
+```
+
+Verify:
+
+```bash
+tail -f /var/www/ai_calling_system/logs/cron_sync.log
+```
+
+---
+
+## 🔹 PART 8: FIREWALL (OPTIONAL BUT RECOMMENDED)
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+```
+
+---
+
+## 🔹 PART 9: SERVICE VERIFICATION
+
+```bash
+sudo systemctl status nginx
+sudo systemctl status php8.1-fpm
+sudo systemctl status mysql
+```
+
+✔ All must be **active (running)**
+
