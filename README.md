@@ -122,24 +122,26 @@ Update this one...
 
 server {
     listen 80;
-    server_name _;
-    root /var/www/ai_calling_system/public;
+    server_name sushruteyehospital.in www.sushruteyehospital.in;
+
+    root /var/www/sushruteyehospital;
     index index.php index.html;
 
-    server_tokens off;
+    access_log /var/log/nginx/sushruteyehospital.access.log;
+    error_log  /var/log/nginx/sushruteyehospital.error.log;
 
     location / {
-        try_files $uri $uri/ /index.php?$query_string;
+        try_files $uri $uri/ /index.php?$args;
     }
+
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php8.1-fpm.sock;
     }
-    location ~ /\. {
+
+    location ~ /\.ht {
         deny all;
     }
-    error_log /var/log/nginx/ai_calling_error.log;
-    access_log /var/log/nginx/ai_calling_access.log;
 }
 
 
