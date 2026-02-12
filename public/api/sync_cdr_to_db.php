@@ -62,8 +62,8 @@ foreach ($data['data'] as $cdr) {
         $minutes,
         $rate,
         $amount,
-        ucfirst($cdr['hangup_disposition'])
-    ]);
+        ucfirst((string)($cdr['hangup_disposition'] ?? 'Unknown'))
+        ]);
 
     $rows++;
 }
