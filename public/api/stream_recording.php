@@ -1,6 +1,6 @@
 <?php
-require '../core/auth.php';
-require '../config/vobiz_config.php';
+require '../../core/auth.php';
+require '../../config/vobiz_config.php';
 
 if (!isset($_GET['url'])) {
     http_response_code(400);

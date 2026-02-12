@@ -17,7 +17,7 @@ async function loadCDR(reset = false) {
 
   if (!HAS_NEXT) return;
 
-  const res = await fetch(`../api/cdr.php?page=${PAGE}&limit=${LIMIT}`);
+  const res = await fetch(`/api/cdr.php?page=${PAGE}&limit=${LIMIT}`);
   const json = await res.json();
 
   HAS_NEXT = json.hasNext === true;
@@ -79,7 +79,7 @@ function updateMetrics(calls) {
 // ===== BILLING =====
 async function loadBilling() {
   try {
-    const res = await fetch("../api/billing_summary.php");
+    const res = await fetch("/api/billing_summary.php");
     const bill = await res.json();
 
     const billEl = document.getElementById("totalBill");
@@ -127,7 +127,7 @@ function renderTable(calls) {
                 call.recording_url
                   ? `
                     <audio controls preload="none">
-                      <source src="../api/stream_recording.php?url=${encodeURIComponent(call.recording_url)}">
+                      <source src="/api/stream_recording.php?url=${encodeURIComponent(call.recording_url)}">
                     </audio>
                   `
                   : "—"
@@ -142,10 +142,14 @@ function renderTable(calls) {
 function formatIST(dateStr) {
   if (!dateStr) return "-";
 
-  // Force UTC by appending Z
-  const utcDate = new Date(dateStr + "Z");
+  // Convert "YYYY-MM-DD HH:MM:SS" → ISO format
+  const iso = dateStr.replace(" ", "T");
 
-  return utcDate.toLocaleString("en-IN", {
+  const date = new Date(iso);
+
+  if (isNaN(date)) return "-";
+
+  return date.toLocaleString("en-IN", {
     timeZone: "Asia/Kolkata",
     day: "2-digit",
     month: "2-digit",

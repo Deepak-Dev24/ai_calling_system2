@@ -15,7 +15,7 @@ if (!$isCron) {
 
 /* Always required */
 require_once __DIR__ . '/../../core/db.php';
-require_once __DIR__ . '/../../api/vobiz_cdr_fetch.php';
+require_once __DIR__ . '/vobiz_cdr_fetch.php';
 
 header('Content-Type: application/json');
 $userId = $isCron ? 1 : ($_SESSION['user_id'] ?? 1);
@@ -54,7 +54,7 @@ foreach ($data['data'] as $cdr) {
     $stmt->execute([
         $userId,
         $cdr['uuid'],
-        str_replace('T', ' ', $cdr['start_time']),
+        str_replace('Z', ' ', $cdr['start_time']),
         $cdr['call_direction'],
         $cdr['caller_id_number'],
         $cdr['destination_number'],

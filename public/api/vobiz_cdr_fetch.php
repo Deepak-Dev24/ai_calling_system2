@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config/vobiz_config.php';
+require_once __DIR__ . '/../../config/vobiz_config.php';
 
 function fetchVobizCDR($page = 1, $limit = 50) {
 

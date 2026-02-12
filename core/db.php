@@ -1,9 +1,8 @@
 <?php
-$host = "localhost";
+$host = "127.0.0.1";
 $db   = "call_billing";
-$user = "root";
-$pass = "Redhat@123";
-
+$user = "aiuser";
+$pass = "AiUser@123";
 try {
   $pdo = new PDO(
     "mysql:host=$host;dbname=$db;charset=utf8mb4",
